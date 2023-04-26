@@ -2,6 +2,8 @@ import os
 import requests
 import threading
 import zipfile
+import logging
+import traceback
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLabel, QTextEdit, QPushButton, QWidget, QMessageBox, QDialog, QDialogButtonBox, QTextBrowser
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtCore import pyqtSignal
@@ -12,6 +14,12 @@ from instaloader import Instaloader, Post
 from PyQt5.QtGui import QPixmap
 import re
 import sys
+
+logging.basicConfig(
+    filename=os.path.join(os.path.expanduser('~'), 'Reels_Downloader.log'),
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
 
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
@@ -121,7 +129,9 @@ class App(QMainWindow):
                 else:
                     self.status_label.setText(f"Error: Not a video URL")
             except Exception as e:
-                self.status_label.setText(f"Error: {str(e)}")
+                error_msg = f"Error: {str(e)}\n{traceback.format_exc()}"
+                logging.error(error_msg)
+                self.status_label.setText("An error occurred. Please check the log file.")
 
         # Create a ZIP file of the videos
         with zipfile.ZipFile(os.path.join(os.path.expanduser('~'), "Reels.zip"), "w") as f:
