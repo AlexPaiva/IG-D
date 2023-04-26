@@ -120,6 +120,8 @@ class App(QMainWindow):
         # Initialize Instaloader
         L = Instaloader(save_metadata=False, download_geotags=False, download_comments=False)
 
+        output_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Reels')
+
         # Download the videos
         for i, link in enumerate(links):
             try:
