@@ -16,11 +16,6 @@ from PyQt5.QtGui import QPixmap
 import re
 import sys
 
-def show_message_box(icon, title, text):
-    mbox = QMessageBox(icon, title, text, QMessageBox.Ok)
-    mbox.setWindowModality(Qt.ApplicationModal)
-    mbox.exec_()
-
 logging.basicConfig(
     filename=os.path.join(os.path.expanduser('~'), 'Reels_Downloader.log'),
     level=logging.INFO,
@@ -111,8 +106,9 @@ class App(QMainWindow):
                 return
 
         # Create a directory to store the videos
-        if not os.path.exists(os.path.join(os.path.expanduser('~'), 'Reels')):
-            os.mkdir("Reels")
+        output_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Reels')
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
 
         # Disable the download button
         self.download_button.setEnabled(False)
@@ -130,7 +126,7 @@ class App(QMainWindow):
                 shortcode = self.extract_shortcode(link)
                 post = Post.from_shortcode(L.context, shortcode)
                 if post.is_video:
-                    L.download_post(post, os.path.join(os.path.expanduser('~'), 'Reels'))
+                    L.download_post(post, output_path)
                     self.status_label.setText(f"Downloading Video {i+1}: Completed")
                 else:
                     self.status_label.setText(f"Error: Not a video URL")
@@ -140,16 +136,15 @@ class App(QMainWindow):
                 self.status_label.setText("An error occurred. Please check the log file.")
 
         # Create a ZIP file of the videos
-        with zipfile.ZipFile(os.path.join(os.path.expanduser('~'), "Reels.zip"), "w") as f:
+        with zipfile.ZipFile(os.path.join(os.path.expanduser('~'), 'Desktop', "Reels.zip"), "w") as f:
             for filename in os.listdir("Reels"):
                 if filename.endswith(".mp4"):
                     f.write(os.path.join("Reels", filename), filename)
 
         # Remove the directory with the videos
-        reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
-        for filename in os.listdir(reels_directory):
-            os.remove(os.path.join(reels_directory, filename))
-        os.rmdir(reels_directory)
+        for filename in os.listdir(output_path):
+            os.remove(os.path.join(output_path, filename))
+        os.rmdir(output_path)
 
         # Enable the download button
         self.download_button.setEnabled(True)
@@ -158,11 +153,7 @@ class App(QMainWindow):
         self.status_label.setText("Done!")
 
         # Show a message box with download info
-        QMetaObject.invokeMethod(QApplication.instance(), show_message_box,
-                         Qt.QueuedConnection,
-                         Q_ARG(QMessageBox.Icon, QMessageBox.Information),
-                         Q_ARG(str, "Error"),
-                         Q_ARG(str, "Failed to download the video. Please check the link and try again."))
+        QMessageBox.information(self, "Download Complete", "All videos have been downloaded and zipped.")
 
     def extract_shortcode(self, url):
         regex = r"(?<=instagram\.com/)(p|reel|tv)/([\w-]+)"
