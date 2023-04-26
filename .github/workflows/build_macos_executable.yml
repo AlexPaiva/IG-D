@@ -61,7 +61,7 @@ jobs:
         mkdir Reels_Downloader.app/Contents
         mkdir Reels_Downloader.app/Contents/MacOS
         mkdir Reels_Downloader.app/Contents/Resources
-        cp Reels_Downloader Reels_Downloader.app/Contents/MacOS/
+        cp dist/Reels_Downloader Reels_Downloader.app/Contents/MacOS/
         cp app_icon.icns Reels_Downloader.app/Contents/Resources/
         cp Info.plist Reels_Downloader.app/Contents/
 
