@@ -106,8 +106,9 @@ class App(QMainWindow):
                 return
 
         # Create a directory to store the videos
-        if not os.path.exists(os.path.join(os.path.expanduser('~'), 'Reels')):
-            os.mkdir("Reels")
+        reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
+        if not os.path.exists(reels_directory):
+            os.makedirs(reels_directory)
 
         # Disable the download button
         self.download_button.setEnabled(False)
@@ -136,9 +137,9 @@ class App(QMainWindow):
 
         # Create a ZIP file of the videos
         with zipfile.ZipFile(os.path.join(os.path.expanduser('~'), "Reels.zip"), "w") as f:
-            for filename in os.listdir("Reels"):
+            for filename in os.listdir(reels_directory):
                 if filename.endswith(".mp4"):
-                    f.write(os.path.join("Reels", filename), filename)
+                    f.write(os.path.join(reels_directory, filename), filename)
 
         # Remove the directory with the videos
         reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
