@@ -9,11 +9,17 @@ from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtCore import pyqtSignal
 import qtmodern.styles
 import qtmodern.windows
+from PyQt5.QtCore import QMetaObject, Qt
 from PyQt5.QtGui import QIcon
 from instaloader import Instaloader, Post
 from PyQt5.QtGui import QPixmap
 import re
 import sys
+
+def show_message_box(icon, title, text):
+    mbox = QMessageBox(icon, title, text, QMessageBox.Ok)
+    mbox.setWindowModality(Qt.ApplicationModal)
+    mbox.exec_()
 
 logging.basicConfig(
     filename=os.path.join(os.path.expanduser('~'), 'Reels_Downloader.log'),
@@ -152,7 +158,11 @@ class App(QMainWindow):
         self.status_label.setText("Done!")
 
         # Show a message box with download info
-        QMessageBox.information(self, "Download Complete", "All videos have been downloaded and zipped.")
+        QMetaObject.invokeMethod(QApplication.instance(), show_message_box,
+                         Qt.QueuedConnection,
+                         Q_ARG(QMessageBox.Icon, QMessageBox.Information),
+                         Q_ARG(str, "Error"),
+                         Q_ARG(str, "Failed to download the video. Please check the link and try again."))
 
     def extract_shortcode(self, url):
         regex = r"(?<=instagram\.com/)(p|reel|tv)/([\w-]+)"
