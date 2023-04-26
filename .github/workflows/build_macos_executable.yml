@@ -27,46 +27,12 @@ jobs:
       run: |
         pip install pyinstaller
 
-    - name: Create Info.plist
-      run: |
-        echo '<?xml version="1.0" encoding="UTF-8"?>
-        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-        <plist version="1.0">
-        <dict>
-            <key>CFBundleExecutable</key>
-            <string>Reels_Downloader</string>
-            <key>CFBundleIconFile</key>
-            <string>app_icon.icns</string>
-            <key>CFBundleIdentifier</key>
-            <string>com.randomcompany.ReelsDownloader</string>
-            <key>CFBundleName</key>
-            <string>Reels Downloader</string>
-            <key>CFBundleDisplayName</key>
-            <string>Reels Downloader</string>
-            <key>CFBundleVersion</key>
-            <string>1.0.0</string>
-            <key>CFBundleShortVersionString</key>
-            <string>1.0</string>
-            <key>CFBundleInfoDictionaryVersion</key>
-            <string>6.0</string>
-            <key>NSHumanReadableCopyright</key>
-            <string>© 2023 Random Company. All rights reserved.</string>
-        </dict>
-        </plist>' > Info.plist
-
     - name: Build macOS Application
       run: |
-        pyinstaller --onefile --windowed --icon=app_icon.icns --clean --add-data "potatowatts.ico:." --add-data "image_1.png:." --name "Reels_Downloader" reels_downloader.py
-        mkdir Reels_Downloader.app
-        mkdir Reels_Downloader.app/Contents
-        mkdir Reels_Downloader.app/Contents/MacOS
-        mkdir Reels_Downloader.app/Contents/Resources
-        cp dist/Reels_Downloader Reels_Downloader.app/Contents/MacOS/
-        cp app_icon.icns Reels_Downloader.app/Contents/Resources/
-        cp Info.plist Reels_Downloader.app/Contents/
+        pyinstaller --onefile --windowed --icon=app_icon.icns --clean --add-data "potatowatts.ico:." --add-data "image_1.png:." --osx-bundle-identifier "com.randomcompany.ReelsDownloader" --name "Reels_Downloader" reels_downloader.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
         name: Reels_Downloader_macOS
-        path: Reels_Downloader.app
+        path: dist/*
