@@ -3,11 +3,11 @@ name: Build macOS Application
 on:
   push:
     branches:
-      - main  # Replace with your default branch name if it's not 'main'
+      - main
 
 jobs:
   build:
-    runs-on: macOS-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout repository
@@ -27,12 +27,17 @@ jobs:
       run: |
         pip install pyinstaller
 
-    - name: Build macOS application
+    - name: Build macOS Application
       run: |
-        pyinstaller --onefile --windowed --add-data "potatowatts.ico:." --add-data "image_1.png:." reels_downloader.py
+        pyinstaller --onefile --windowed --icon=app_icon.icns --clean --add-data "potatowatts.ico:." --add-data "image_1.png:." --name "Reels_Downloader" reels_downloader.py
+        mkdir Reels_Downloader.app
+        mkdir Reels_Downloader.app/Contents
+        mkdir Reels_Downloader.app/Contents/MacOS
+        cp Reels_Downloader Reels_Downloader.app/Contents/MacOS/
+        cp -r dist/Reels_Downloader Reels_Downloader.app/Contents/MacOS/
 
-    - name: Upload macOS application
+    - name: Upload Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: reels_downloader_macOS
-        path: dist/reels_downloader
+        name: Reels_Downloader_macOS
+        path: Reels_Downloader.app
