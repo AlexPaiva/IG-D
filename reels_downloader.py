@@ -106,9 +106,8 @@ class App(QMainWindow):
                 return
 
         # Create a directory to store the videos
-        output_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Reels')
-        if not os.path.exists(output_path):
-            os.mkdir(output_path)
+        if not os.path.exists(os.path.join(os.path.expanduser('~'), 'Reels')):
+            os.mkdir("Reels")
 
         # Disable the download button
         self.download_button.setEnabled(False)
@@ -120,15 +119,13 @@ class App(QMainWindow):
         # Initialize Instaloader
         L = Instaloader(save_metadata=False, download_geotags=False, download_comments=False)
 
-        output_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'Reels')
-
         # Download the videos
         for i, link in enumerate(links):
             try:
                 shortcode = self.extract_shortcode(link)
                 post = Post.from_shortcode(L.context, shortcode)
                 if post.is_video:
-                    L.download_post(post, output_path)
+                    L.download_post(post, os.path.join(os.path.expanduser('~'), 'Reels'))
                     self.status_label.setText(f"Downloading Video {i+1}: Completed")
                 else:
                     self.status_label.setText(f"Error: Not a video URL")
@@ -138,15 +135,16 @@ class App(QMainWindow):
                 self.status_label.setText("An error occurred. Please check the log file.")
 
         # Create a ZIP file of the videos
-        with zipfile.ZipFile(os.path.join(os.path.expanduser('~'), 'Desktop', "Reels.zip"), "w") as f:
+        with zipfile.ZipFile(os.path.join(os.path.expanduser('~'), "Reels.zip"), "w") as f:
             for filename in os.listdir("Reels"):
                 if filename.endswith(".mp4"):
                     f.write(os.path.join("Reels", filename), filename)
 
         # Remove the directory with the videos
-        for filename in os.listdir(output_path):
-            os.remove(os.path.join(output_path, filename))
-        os.rmdir(output_path)
+        reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
+        for filename in os.listdir(reels_directory):
+            os.remove(os.path.join(reels_directory, filename))
+        os.rmdir(reels_directory)
 
         # Enable the download button
         self.download_button.setEnabled(True)
