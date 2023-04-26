@@ -33,8 +33,7 @@ jobs:
         mkdir Reels_Downloader.app
         mkdir Reels_Downloader.app/Contents
         mkdir Reels_Downloader.app/Contents/MacOS
-        cp Reels_Downloader Reels_Downloader.app/Contents/MacOS/
-        cp -r dist/Reels_Downloader Reels_Downloader.app/Contents/MacOS/
+        cp dist/Reels_Downloader Reels_Downloader.app/Contents/MacOS/Reels_Downloader
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v2
