@@ -1,13 +1,12 @@
-name: Build macOS Executable
+name: Build macOS Application
 
 on:
   push:
     branches:
-      - main
+      - main  # Replace with your default branch name if it's not 'main'
 
 jobs:
   build:
-
     runs-on: macOS-latest
 
     steps:
@@ -17,18 +16,23 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: 3.9
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Build macOS executable
-      run: pyinstaller -y reels_downloader.spec
+    - name: Install PyInstaller
+      run: |
+        pip install pyinstaller
 
-    - name: Upload macOS executable
+    - name: Build macOS application
+      run: |
+        pyinstaller --onefile --windowed --add-data "potatowatts.ico:." --add-data "image_1.png:." reels_downloader.py
+
+    - name: Upload macOS application
       uses: actions/upload-artifact@v2
       with:
-        name: macOS-executable
-        path: dist/reels_downloader.app
+        name: reels_downloader_macOS
+        path: dist/reels_downloader
