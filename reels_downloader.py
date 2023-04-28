@@ -140,6 +140,7 @@ class App(QMainWindow):
 
         # Set the working directory to the user's home directory
         os.chdir(os.path.expanduser('~'))
+        reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
 
         # Create a ZIP file of the videos
         with zipfile.ZipFile("Reels.zip", "w") as f:
