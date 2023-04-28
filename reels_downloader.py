@@ -105,6 +105,9 @@ class App(QMainWindow):
                 QMessageBox.warning(self, "Error", f"Invalid Instagram Reel link: {link}")
                 return
 
+        # Set the working directory to the user's home directory
+        os.chdir(os.path.expanduser('~'))
+
         # Create a directory to store the videos
         reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
         if not os.path.exists(reels_directory):
@@ -135,8 +138,11 @@ class App(QMainWindow):
                 logging.error(error_msg)
                 self.status_label.setText("An error occurred. Please check the log file.")
 
+        # Set the working directory to the user's home directory
+        os.chdir(os.path.expanduser('~'))
+
         # Create a ZIP file of the videos
-        with zipfile.ZipFile(os.path.join(os.path.expanduser('~'), "Reels.zip"), "w") as f:
+        with zipfile.ZipFile("Reels.zip", "w") as f:
             for filename in os.listdir(reels_directory):
                 if filename.endswith(".mp4"):
                     f.write(os.path.join(reels_directory, filename), filename)
