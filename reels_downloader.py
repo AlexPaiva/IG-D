@@ -6,6 +6,7 @@ import logging
 import traceback
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QLabel, QTextEdit, QPushButton, QWidget, QMessageBox, QDialog, QDialogButtonBox, QTextBrowser
 from PyQt5.QtWidgets import QHBoxLayout
+from instaloader.exceptions import ConnectionException
 from PyQt5.QtCore import pyqtSignal
 import qtmodern.styles
 import qtmodern.windows
@@ -122,46 +123,94 @@ class App(QMainWindow):
     def download_videos(self, links):
         # Initialize Instaloader
         L = Instaloader(save_metadata=False, download_geotags=False, download_comments=False)
+        reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
 
-        # Download the videos
-        for i, link in enumerate(links):
+        try:
+            # Download the videos
+            for i, link in enumerate(links):
+                try:
+                    shortcode = self.extract_shortcode(link)
+                    post = Post.from_shortcode(L.context, shortcode)
+                    if post.is_video:
+                        L.download_post(post, reels_directory)
+                        self.status_label.setText(f"Downloading Video {i+1}: Completed")
+                    else:
+                        self.status_label.setText(f"Error: Not a video URL")
+                except ConnectionException as e:
+                    try:
+                        shortcode = self.extract_shortcode(link)
+                        post = Post.from_shortcode(L.context, shortcode)
+                        if post.is_video:
+                            L.download_post(post, reels_directory)
+                            self.status_label.setText(f"Downloading Video {i+1}: Completed")
+                        else:
+                            self.status_label.setText(f"Error: Not a video URL")
+                    except ConnectionException as e:
+                        error_msg = f"Error8: {str(e)} - The resource is no longer available or the link is invalid."
+                        logging.error(error_msg)
+                        print(error_msg)
+                        self.status_label.setText("An error occurred. Please check the log file.")
+                    except Exception as e:
+                        error_msg = f"Error77: {str(e)}\n{traceback.format_exc()}"
+                        logging.error(error_msg)
+                        self.status_label.setText("An error occurred. Please check the log file.")
+                except Exception as e:
+                    error_msg = f"Error7: {str(e)}\n{traceback.format_exc()}"
+                    logging.error(error_msg)
+                    self.status_label.setText("An error occurred. Please check the log file.")
+        finally:
+            # Set the working directory to the user's home directory
             try:
-                shortcode = self.extract_shortcode(link)
-                post = Post.from_shortcode(L.context, shortcode)
-                if post.is_video:
-                    L.download_post(post, os.path.join(os.path.expanduser('~'), 'Reels'))
-                    self.status_label.setText(f"Downloading Video {i+1}: Completed")
-                else:
-                    self.status_label.setText(f"Error: Not a video URL")
+                os.chdir(os.path.expanduser('~'))
             except Exception as e:
-                error_msg = f"Error: {str(e)}\n{traceback.format_exc()}"
+                error_msg = f"Error 6: {str(e)}\n{traceback.format_exc()}"
                 logging.error(error_msg)
                 self.status_label.setText("An error occurred. Please check the log file.")
 
-        # Set the working directory to the user's home directory
-        os.chdir(os.path.expanduser('~'))
-        reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
+            # Create a ZIP file of the videos
+            try:
+                with zipfile.ZipFile("Reels.zip", "w") as f:
+                    for filename in os.listdir(reels_directory):
+                        if filename.endswith(".mp4"):
+                            f.write(os.path.join(reels_directory, filename), filename)
+            except Exception as e:
+                error_msg = f"Error11: {str(e)}\n{traceback.format_exc()}"
+                logging.error(error_msg)
+                self.status_label.setText("An error occurred. Please check the log file.")
 
-        # Create a ZIP file of the videos
-        with zipfile.ZipFile("Reels.zip", "w") as f:
-            for filename in os.listdir(reels_directory):
-                if filename.endswith(".mp4"):
-                    f.write(os.path.join(reels_directory, filename), filename)
+            # Remove the directory with the videos
+            try:
+                for filename in os.listdir(reels_directory):
+                    os.remove(os.path.join(reels_directory, filename))
+                os.rmdir(reels_directory)
+            except Exception as e:
+                error_msg = f"Error99: {str(e)}\n{traceback.format_exc()}"
+                logging.error(error_msg)
+                self.status_label.setText("An error occurred. Please check the log file.")
 
-        # Remove the directory with the videos
-        reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
-        for filename in os.listdir(reels_directory):
-            os.remove(os.path.join(reels_directory, filename))
-        os.rmdir(reels_directory)
+            # Enable the download button
+            try:
+                self.download_button.setEnabled(True)
+            except Exception as e:
+                error_msg = f"Error09: {str(e)}\n{traceback.format_exc()}"
+                logging.error(error_msg)
+                self.status_label.setText("An error occurred. Please check the log file.")
 
-        # Enable the download button
-        self.download_button.setEnabled(True)
+            # Update the status label
+            try:
+                self.status_label.setText("Done!")
+            except Exception as e:
+                error_msg = f"Error010: {str(e)}\n{traceback.format_exc()}"
+                logging.error(error_msg)
+                self.status_label.setText("An error occurred. Please check the log file.")
 
-        # Update the status label
-        self.status_label.setText("Done!")
-
-        # Show a message box with download info
-        QMessageBox.information(self, "Download Complete", "All videos have been downloaded and zipped.")
+            # Show a message box with download info
+            try:
+                QMessageBox.information(self, "Download Complete", "All videos have been downloaded and zipped.")
+            except Exception as e:
+                error_msg = f"Error055: {str(e)}\n{traceback.format_exc()}"
+                logging.error(error_msg)
+                self.status_label.setText("An error occurred. Please check the log file.")
 
     def extract_shortcode(self, url):
         regex = r"(?<=instagram\.com/)(p|reel|tv)/([\w-]+)"
