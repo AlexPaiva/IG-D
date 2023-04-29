@@ -31,22 +31,19 @@ def download_videos(links):
                 post = Post.from_shortcode(L.context, shortcode)
                 if post.is_video:
                     L.download_post(post, reels_directory)
-                    logging.info(f"Downloading Video {i+1}: Completed")
+                    logging.info(f"Downloading Video {i+1}: Completed!")
                 else:
                     logging.error(f"Error: Not a video URL")
             except ConnectionException as e:
-                logging.error("An error occurred. Please check the log file.")
+                logging.error(f"An error occurred 7: {e}")
             except Exception as e:
-                logging.error("An error occurred. Please check the log file.")
+                logging.error(f"An error occurred 9: {e}")
     finally:
-        # Set the working directory to the user's home directory
-        os.chdir(os.path.expanduser('~'))
-
         # Create a ZIP file of the videos
-        with zipfile.ZipFile("Reels.zip", "w", zipfile.ZIP_DEFLATED) as f:
+        with zipfile.ZipFile("Reels.zip", "w") as f:
             for filename in os.listdir(reels_directory):
                 if filename.endswith(".mp4"):
-                    f.write(os.path.join(reels_directory, filename), os.path.basename(filename))
+                    f.write(os.path.join(reels_directory, filename), filename)
 
         # Remove the directory with the videos
         for filename in os.listdir(reels_directory):
