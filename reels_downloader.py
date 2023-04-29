@@ -40,7 +40,8 @@ def download_videos(links):
                 logging.error(f"An error occurred 9: {e}")
     finally:
         # Create a ZIP file of the videos
-        with zipfile.ZipFile("Reels.zip", "w") as f:
+        desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
+        with zipfile.ZipFile(os.path.join(desktop_path, "Reels.zip"), "w") as f:
             for filename in os.listdir(reels_directory):
                 if filename.endswith(".mp4"):
                     f.write(os.path.join(reels_directory, filename), filename)
