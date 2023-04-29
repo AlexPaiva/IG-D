@@ -62,11 +62,17 @@ def extract_shortcode(url):
         return matches.group(2)
     return None
 
-def main():
-    with open("Links.txt", "r") as f:
-        links = f.readlines()
 
-    links = [link.strip() for link in links if link.strip()]
+def main():
+    home_directory = os.path.expanduser("~")
+    links_path = os.path.join(home_directory, "Links.txt")
+    
+    if not os.path.exists(links_path):
+        logging.error(f"Error: The 'Links.txt' file is not found in the home directory: {home_directory}")
+        return
+
+    with open(links_path, "r") as f:
+        links = f.readlines()
 
     if not links:
         logging.warning("Please enter at least one valid Instagram Reel link in the 'Links.txt' file.")
