@@ -21,7 +21,7 @@ def resource_path(relative_path):
 def download_videos(links):
     # Initialize Instaloader
     L = Instaloader(save_metadata=False, download_geotags=False, download_comments=False)
-    reels_directory = os.path.join(os.path.expanduser('~'), 'Reels')
+    reels_directory = 'Reels'
 
     try:
         # Download the videos
@@ -30,7 +30,7 @@ def download_videos(links):
                 shortcode = extract_shortcode(link)
                 post = Post.from_shortcode(L.context, shortcode)
                 if post.is_video:
-                    L.download_post(post, reels_directory)
+                    L.download_post(post, 'Reels')
                     logging.info(f"Downloading Video {i+1}: Completed!")
                 else:
                     logging.error(f"Error: Not a video URL")
