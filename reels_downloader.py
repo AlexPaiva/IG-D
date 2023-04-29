@@ -43,10 +43,10 @@ def download_videos(links):
         os.chdir(os.path.expanduser('~'))
 
         # Create a ZIP file of the videos
-        with zipfile.ZipFile("Reels.zip", "w") as f:
+        with zipfile.ZipFile("Reels.zip", "w", zipfile.ZIP_DEFLATED) as f:
             for filename in os.listdir(reels_directory):
                 if filename.endswith(".mp4"):
-                    f.write(os.path.join(reels_directory, filename), filename)
+                    f.write(os.path.join(reels_directory, filename), os.path.basename(filename))
 
         # Remove the directory with the videos
         for filename in os.listdir(reels_directory):
