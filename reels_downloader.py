@@ -63,7 +63,7 @@ def extract_shortcode(url):
 
 def main():
     home_directory = os.path.expanduser("~")
-    links_path = os.path.join(home_directory, "Links.txt")
+    links_path = os.path.join(os.path.expanduser("~"), "Desktop", "Links.txt")
     
     if not os.path.exists(links_path):
         logging.error(f"Error: The 'Links.txt' file is not found in the home directory: {home_directory}")
