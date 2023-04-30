@@ -8,7 +8,6 @@ from instaloader import Instaloader, Post
 from instaloader.exceptions import ConnectionException
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk, PhotoImage
-from PIL import Image, ImageTk
 import tkinter.messagebox as msgbox
 
 logging.basicConfig(
