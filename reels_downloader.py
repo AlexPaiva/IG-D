@@ -91,7 +91,7 @@ def start_download():
 root = tk.Tk()
 root.title("Instagram Reels Downloader")
 root.resizable(False, False)  # Make the interface non-resizable
-root.iconbitmap('potatowatts.ico')
+root.iconbitmap(resource_path('potatowatts.ico'))
 
 frame = ttk.Frame(root, padding="10")
 frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
@@ -108,7 +108,7 @@ links_text.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), 
 download_button.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), padx=5, pady=5)
 
 # Load the image file
-image_path = "image_1.png"  # Replace this with the path to your image file
+image_path = resource_path("image_1.png")  # Replace this with the path to your image file
 photo = PhotoImage(file=image_path)
 
 # Create a Label widget to display the image
