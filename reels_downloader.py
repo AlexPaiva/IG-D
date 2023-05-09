@@ -25,6 +25,7 @@ def download_videos(links):
     # Initialize Instaloader
     L = Instaloader(save_metadata=False, download_geotags=False, download_comments=False)
     reels_directory = 'Reels'
+    failed_indices = []
 
     try:
         # Download the videos
@@ -39,10 +40,26 @@ def download_videos(links):
                     root.update_idletasks()
                 else:
                     logging.error(f"Error: Not a video URL")
-            except ConnectionException as e:
-                logging.error(f"An error occurred 7: {e}")
-            except Exception as e:
-                logging.error(f"An error occurred 9: {e}")
+                    failed_indices.append(i)
+                
+            except:
+                try:
+                    shortcode = extract_shortcode(link)
+                    post = Post.from_shortcode(L.context, shortcode)
+                    if post.is_video:
+                        L.download_post(post, 'Reels')
+                        logging.info(f"Downloading Video {i+1}: Completed!")
+                        progress_var.set(f"Downloading Video {i+1}: Completed!")
+                        root.update_idletasks()
+                    else:
+                        logging.error(f"Error: Not a video URL")
+                        failed_indices.append(i)
+                except ConnectionException as e:
+                    logging.error(f"An error occurred 7: {e}")
+                    failed_indices.append(i)
+                except Exception as e:
+                    logging.error(f"An error occurred 9: {e}")
+                    failed_indices.append(i)
     finally:
         # Create a ZIP file of the videos
         desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
@@ -56,8 +73,8 @@ def download_videos(links):
             os.remove(os.path.join(reels_directory, filename))
         os.rmdir(reels_directory)
 
-        logging.info("Done! All videos have been downloaded and zipped.")
-        progress_var.set("Done! All videos have been downloaded and zipped.")
+        logging.info("Done! Videos have been downloaded and zipped. Links that failed: "+str(failed_indices))
+        progress_var.set("Done! Videos have been downloaded and zipped. Links that failed: "+str(failed_indices))
         root.update_idletasks()
 
 def extract_shortcode(url):
